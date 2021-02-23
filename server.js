@@ -20,7 +20,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
   helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        "script-src": ["'self'", "'unsafe-inline'", "cs-005-ias.herokuapp.com"],
+      },
+    },
   })
 );
 app.use(express.static(path.join(__dirname, "ias-app/build")));
