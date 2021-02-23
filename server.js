@@ -22,8 +22,10 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        "script-src": ["'self'", "'unsafe-inline'", "cs-005-ias.herokuapp.com"],
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "trusted-cdn.com"],
+        // ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        // "script-src": ["'self'", "'unsafe-inline'", "cs-005-ias.herokuapp.com"],
       },
     },
   })
