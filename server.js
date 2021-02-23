@@ -26,8 +26,10 @@ app.use(
         scriptSrc: [
           "'self'",
           "'unsafe-inline'",
-          "https://cs-005-ias.herokuapp.com/",
-          "https://cs-005-ias.herokuapp.com/dashboard",
+          "https://cs-005-ias.herokuapp.com;",
+          "'self'",
+          "'unsafe-inline'",
+          "https://cs-005-ias.herokuapp.com/dashboard;",
         ],
         styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
         imgSrc: ["'self'", "https://*.com"],
