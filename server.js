@@ -19,15 +19,14 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "trusted-cdn.com"],
-        // ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-        // "script-src": ["'self'", "'unsafe-inline'", "cs-005-ias.herokuapp.com"],
-      },
+  contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'", "default.example"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
     },
+    reportOnly: false,
   })
 );
 app.use(express.static(path.join(__dirname, "ias-app/build")));
