@@ -38,9 +38,9 @@ app.use(
 
 app.use(express.static(path.join(__dirname, "ias-app/build")));
 
-app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
+// app.get("*", function (req, res) {
+//   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+// });
 
 const loginRatelimiter = rateLimit({
   windowMs: 1 * 60 * 1000,
