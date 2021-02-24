@@ -14,30 +14,30 @@ const helmet = require("helmet");
 const { createToken, hashPassword, verifyPassword } = require("./util");
 
 const app = express();
-app.use(helmet());
+//app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-connectSources = ["'self'", "https://cs-005-ias.herokuapp.com/"];
+// connectSources = ["'self'", "https://cs-005-ias.herokuapp.com/"];
 
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://cs-005-ias.herokuapp.com/",
-        ],
-        styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
-        imgSrc: ["'self'", "https://*.com", "data:"],
-        fontSrc: ["'self'", "https://*.com", "data:"],
-        connectSrc: connectSources,
-      },
-    },
-  })
-);
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         scriptSrc: [
+//           "'self'",
+//           "'unsafe-inline'",
+//           "https://cs-005-ias.herokuapp.com/",
+//         ],
+//         styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
+//         imgSrc: ["'self'", "https://*.com", "data:"],
+//         fontSrc: ["'self'", "https://*.com", "data:"],
+//         connectSrc: connectSources,
+//       },
+//     },
+//   })
+// );
 app.use(express.static(path.join(__dirname, "ias-app/build")));
 
 app.get("/dashboard", function (req, res) {
