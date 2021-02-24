@@ -234,7 +234,7 @@ app.get("/api/inventory", requireAuth, requireAdmin, async (req, res) => {
   }
 });
 
-app.post("/api/inventory", requireAuth, requireAdmin, async (req, res) => {
+app.post("/api/inventory", requireAuth, async (req, res) => {
   try {
     const userId = req.user.sub;
     const input = Object.assign({}, req.body, {
