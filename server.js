@@ -44,6 +44,10 @@ app.get("/dashboard", function (req, res) {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
 
+app.get("/login", function (req, res) {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
 app.get("/inventory", function (req, res) {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
