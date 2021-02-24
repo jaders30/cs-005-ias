@@ -18,69 +18,20 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-// Sets "Content-Security-Policy: default-src 'self';script-src 'self' example.com;object-src 'none';upgrade-insecure-requests"
 app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "example.com"],
-      objectSrc: ["'none'"],
-      upgradeInsecureRequests: [],
-    },
-  })
-);
-
-// Sets "Content-Security-Policy: default-src 'self';script-src 'self' example.com;object-src 'none'"
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      "default-src": ["'self'"],
-      "script-src": ["'self'", "example.com"],
-      "object-src": ["'none'"],
-    },
-  })
-);
-
-// Sets all of the defaults, but overrides script-src
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      "script-src": ["'self'", "example.com"],
-    },
-  })
-);
-
-// Sets the "Content-Security-Policy-Report-Only" header instead
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      /* ... */
-    },
-    reportOnly: true,
-  })
-);
-
-// Sets "Content-Security-Policy: default-src 'self';script-src 'self' 'nonce-e33ccde670f149c1789b1e1e113b0916'"
-app.use((req, res, next) => {
-  res.locals.cspNonce = crypto.randomBytes(16).toString("hex");
-  next();
-});
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", (req, res) => `'nonce-${res.locals.cspNonce}'`],
-    },
-  })
-);
-
-// Sets "Content-Security-Policy: script-src 'self'"
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      "default-src": helmet.contentSecurityPolicy.dangerouslyDisableDefaultSrc,
-      "script-src": ["'self'"],
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://codersleague.herokuapp.com",
+        ],
+        styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
+        imgSrc: ["'self'", "https://*.com"],
+        fontSrc: ["'self'", "https://*.com", "data:"],
+      },
     },
   })
 );
