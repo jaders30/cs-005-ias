@@ -18,23 +18,23 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://codersleague.herokuapp.com",
-        ],
-        styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
-        imgSrc: ["'self'", "https://*.com"],
-        fontSrc: ["'self'", "https://*.com", "data:"],
-      },
-    },
-  })
-);
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         scriptSrc: [
+//           "'self'",
+//           "'unsafe-inline'",
+//           "https://cs-005-ias.herokuapp.com/",
+//         ],
+//         styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
+//         imgSrc: ["'self'", "https://*.com"],
+//         fontSrc: ["'self'", "https://*.com", "data:"],
+//       },
+//     },
+//   })
+// );
 app.use(express.static(path.join(__dirname, "ias-app/build")));
 
 // app.get("*", function (req, res) {
