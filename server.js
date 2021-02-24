@@ -40,7 +40,7 @@ app.use(
 );
 app.use(express.static(path.join(__dirname, "ias-app/build")));
 
-app.get("/setting", function (req, res) {
+app.get("/settings", function (req, res) {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
 
