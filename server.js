@@ -31,7 +31,7 @@ app.use(
           "https://cs-005-ias.herokuapp.com/",
         ],
         styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
-        imgSrc: ["'self'", "data:"],
+        imgSrc: ["'self'", "https://*.com"],
         fontSrc: ["'self'", "https://*.com", "data:"],
         connectSrc: connectSources,
       },
