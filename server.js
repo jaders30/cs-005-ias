@@ -18,6 +18,8 @@ app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+connectSources = ["'self'", "http://localhost:3001"];
+
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -31,6 +33,7 @@ app.use(
         styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
         imgSrc: ["'self'", "https://*.com"],
         fontSrc: ["'self'", "https://*.com", "data:"],
+        connectSrc: connectSources,
       },
     },
   })
