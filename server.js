@@ -275,7 +275,7 @@ app.delete(
   }
 );
 
-app.get("/api/users", requireAuth, async (req, res) => {
+app.get("/api/users", requireAuth, requireAdmin, async (req, res) => {
   try {
     const users = await User.find()
       .lean()
