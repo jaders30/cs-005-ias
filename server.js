@@ -43,6 +43,10 @@ app.use(express.static(path.join(__dirname, "ias-app/build")));
 //     },
 //   })
 // );
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
 app.get("/bio", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
@@ -51,7 +55,7 @@ app.get("/settings", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
 
-app.get("/user", (req, res) => {
+app.get("/users", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
 
