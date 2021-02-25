@@ -38,7 +38,9 @@ const AuthProvider = ({ children }) => {
   };
 
   const isAuthenticated = () => {
-    if (!authState.token || !authState.expiresAt) {
+    const data = JSON.parse(userInfo);
+
+    if (!authState.token || !authState.expiresAt || data.status === "Pending") {
       return false;
     }
     return true;

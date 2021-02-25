@@ -34,10 +34,12 @@ const Login = () => {
       authContext.setAuthState(data);
       setLoginSuccess(data.message);
       setLoginError(null);
-
-      setTimeout(() => {
-        setRedirectOnLogin(true);
-      }, 700);
+      if (data.userInfo.status === "Active") {
+        setTimeout(() => {
+          setRedirectOnLogin(true);
+        }, 700);
+      }
+      setLoginLoading(false);
     } catch (error) {
       setLoginLoading(false);
       const { data } = error.response;
