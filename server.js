@@ -42,7 +42,29 @@ app.use((req, res, next) => {
 //     },
 //   })
 // );
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static(path.join(__dirname, "ias-app/build")));
 
+  app.get("/bio", (req, res) => {
+    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+  });
+
+  app.get("/settings", (req, res) => {
+    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+  });
+
+  app.get("/user", (req, res) => {
+    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+  });
+
+  app.get("/dashboard", (req, res) => {
+    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+  });
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+  });
+}
 const loginRatelimiter = rateLimit({
   windowMs: 1 * 60 * 1000,
   max: 3,
@@ -319,29 +341,7 @@ app.patch("/api/bio", requireAuth, async (req, res) => {
     });
   }
 });
-if (process.env.NODE_ENV == "production") {
-  app.use(express.static(path.join(__dirname, "ias-app/build")));
 
-  app.get("/bio", (req, res) => {
-    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-  });
-
-  app.get("/settings", (req, res) => {
-    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-  });
-
-  app.get("/user", (req, res) => {
-    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-  });
-
-  app.get("/dashboard", (req, res) => {
-    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-  });
-
-  app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-  });
-}
 async function connect() {
   try {
     mongoose.Promise = global.Promise;
