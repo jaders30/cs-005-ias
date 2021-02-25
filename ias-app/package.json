@@ -52,5 +52,5 @@
     "postcss-cli": "^7.1.1",
     "tailwindcss": "^1.4.6"
   },
-  "proxy": "https://cs-005-ias.herokuapp.com"
+  "proxy": "http://localhost:3001"
 }
