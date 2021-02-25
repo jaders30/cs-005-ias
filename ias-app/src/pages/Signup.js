@@ -33,20 +33,10 @@ const Signup = () => {
       setLoginLoading(true);
       const { data } = await publicFetch.post(`signup`, credentials);
 
-      if (data.userInfo.status === "Pending") {
-        authContext.setAuthState(data);
-        setSignupSuccess(data.message);
-        setSignupError("");
-        setLoginLoading(false);
-      } else {
-        authContext.setAuthState(data);
-        setSignupSuccess(data.message);
-        setSignupError("");
-        setLoginLoading(false);
-        setTimeout(() => {
-          setRedirectOnLogin(true);
-        }, 700);
-      }
+      authContext.setAuthState(data);
+      setSignupSuccess(data.message);
+      setSignupError("");
+      setLoginLoading(false);
     } catch (error) {
       setLoginLoading(false);
       const { data } = error.response;
