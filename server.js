@@ -24,6 +24,7 @@ app.use((req, res, next) => {
   // console.log(process.env);
   next();
 });
+app.use(express.static(path.join(__dirname, "ias-app/build")));
 // app.use(
 //   helmet({
 //     contentSecurityPolicy: {
@@ -43,8 +44,6 @@ app.use((req, res, next) => {
 //   })
 // );
 if (process.env.NODE_ENV == "production") {
-  app.use(express.static(path.join(__dirname, "ias-app/build")));
-
   app.get("/bio", (req, res) => {
     res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
   });
