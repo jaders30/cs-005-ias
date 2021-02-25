@@ -24,7 +24,13 @@ app.use((req, res, next) => {
   // console.log(process.env);
   next();
 });
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static(path.join(__dirname, "ias-app/build")));
 
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+  });
+}
 // app.use(
 //   helmet({
 //     contentSecurityPolicy: {
@@ -321,13 +327,6 @@ app.patch("/api/bio", requireAuth, async (req, res) => {
   }
 });
 
-if (process.env.NODE_ENV == "production") {
-  app.use(express.static(path.join(__dirname, "ias-app/build")));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-  });
-}
 async function connect() {
   try {
     mongoose.Promise = global.Promise;
