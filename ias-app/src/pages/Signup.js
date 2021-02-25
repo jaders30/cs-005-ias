@@ -33,7 +33,7 @@ const Signup = () => {
       setLoginLoading(true);
       const { data } = await publicFetch.post(`signup`, credentials);
 
-      if (!data.status) {
+      if (data.status === "Pending") {
         authContext.setAuthState(data);
         setSignupSuccess(data.message);
         setSignupError("");
