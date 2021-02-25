@@ -154,7 +154,7 @@ app.post("/api/authenticate", async (req, res) => {
 
     // ADDED FOR CONFIRMATION -- etong if lang
     if (user.status != "Active") {
-      return res.status(401).send({
+      return res.status(403).send({
         message: "Pending Account. Please Verify Your Email!",
       });
     }
