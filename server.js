@@ -18,7 +18,7 @@ const app = express();
 //app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(bodyParser.json());
 // connectSources = ["'self'", "https://cs-005-ias.herokuapp.com/"];
 app.use((req, res, next) => {
   console.log(req.session);
@@ -67,7 +67,7 @@ sendConfirmationEmail = (name, email, confirmationCode) => {
         <h2>Hello ${name}</h2>
         <p>Thank you for subscribing. Please confirm your email by clicking
          on the following link</p>
-        <a href=https://cs-005-ias.herokuapp.com/confirm/${confirmationCode}> Click here</a>
+        <a href=http://localhost:3000/confirm/${confirmationCode}> Click here</a>
         </div>`,
     })
     .catch((err) => console.log(err));
@@ -93,17 +93,14 @@ app.get("/users", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
 
-app.get("/dashboard", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
-
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
 
-app.get("/", (req, res) => {
+app.get("/dashboard", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
+
 const loginRatelimiter = rateLimit({
   windowMs: 1 * 60 * 1000,
   max: 3,

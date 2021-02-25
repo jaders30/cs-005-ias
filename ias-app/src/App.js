@@ -17,7 +17,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import FourOFour from "./pages/FourOFour";
 import Confirm from "./pages/Confirm";
-// const Welcome = lazy(() => import("./pages/Welcome"));
+
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Inventory = lazy(() => import("./pages/Inventory"));
 const Account = lazy(() => import("./pages/Account"));

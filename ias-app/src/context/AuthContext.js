@@ -38,13 +38,10 @@ const AuthProvider = ({ children }) => {
   };
 
   const isAuthenticated = () => {
-    if (
-      !authState.token ||
-      !authState.expiresAt ||
-      authState.userInfo.status === "Pending"
-    ) {
+    if (!authState.token || !authState.expiresAt) {
       return false;
     }
+    return true;
   };
 
   const isAdmin = () => {
