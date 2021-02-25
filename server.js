@@ -24,13 +24,7 @@ app.use((req, res, next) => {
   // console.log(process.env);
   next();
 });
-if (process.env.NODE_ENV == "production") {
-  app.use(express.static(path.join(__dirname, "ias-app/build")));
-
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-  });
-}
+app.use(express.static(path.join(__dirname, "ias-app/build")));
 // app.use(
 //   helmet({
 //     contentSecurityPolicy: {
@@ -49,7 +43,27 @@ if (process.env.NODE_ENV == "production") {
 //     },
 //   })
 // );
+app.get("/inventory", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+app.get("/bio", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
 
+app.get("/settings", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
+app.get("/users", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
+app.get("/dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
 const loginRatelimiter = rateLimit({
   windowMs: 1 * 60 * 1000,
   max: 3,
