@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const nodemailer = require("nodemailer");
 const cors = require("cors");
 const jwt = require("express-jwt");
 const jwtDecode = require("jwt-decode");
@@ -43,6 +44,40 @@ app.use(express.static(path.join(__dirname, "ias-app/build")));
 //     },
 //   })
 // );
+
+// ADDED FOR EMAIL CONFIRMATION
+const userEmailSender = "jadewensylofariscal@gmail.com";
+const passwordSender = "caradelevinge";
+
+const transport = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: userEmailSender,
+    pass: passwordSender,
+  },
+});
+
+sendConfirmationEmail = (name, email, confirmationCode) => {
+  transport
+    .sendMail({
+      from: userEmailSender,
+      to: email,
+      subject: "Please confirm your account",
+      html: `<h1>Email Confirmation</h1>
+        <h2>Hello ${name}</h2>
+        <p>Thank you for subscribing. Please confirm your email by clicking
+         on the following link</p>
+        <a href=http://localhost:3001/confirm/${confirmationCode}> Click here</a>
+        </div>`,
+    })
+    .catch((err) => console.log(err));
+};
+// LINK
+
+app.get("/confirm/:id", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
 app.get("/inventory", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
@@ -61,6 +96,11 @@ app.get("/users", (req, res) => {
 app.get("/dashboard", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
+
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
 });
@@ -71,6 +111,32 @@ const loginRatelimiter = rateLimit({
 });
 
 app.use("/api/authenticate", loginRatelimiter);
+
+app.get("/api/confirm/:confirmationCode", async (req, res) => {
+  try {
+    const user = await User.findOne({
+      confirmationCode: req.params.confirmationCode,
+    });
+
+    if (!user) {
+      return res.status(404).send({ message: "User Not found." });
+    }
+
+    if (user.status === "Active") {
+      return res.status(201).json({
+        message: true,
+      });
+    }
+
+    user.status = "Active";
+    await user.save();
+    res.status(201).json({
+      message: "Confirmation is saved",
+    });
+  } catch (e) {
+    return res.status(400).json({ message: e });
+  }
+});
 
 app.post("/api/authenticate", async (req, res) => {
   try {
@@ -83,6 +149,13 @@ app.post("/api/authenticate", async (req, res) => {
     if (!user) {
       return res.status(403).json({
         message: "Wrong email or password.",
+      });
+    }
+
+    // ADDED FOR CONFIRMATION -- etong if lang
+    if (user.status != "Active") {
+      return res.status(401).send({
+        message: "Pending Account. Please Verify Your Email!",
       });
     }
 
@@ -120,12 +193,22 @@ app.post("/api/signup", async (req, res) => {
 
     const hashedPassword = await hashPassword(req.body.password);
 
+    // ADDED for EMAIL CONFIRMATIONs
+    const characters =
+      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let CodeForConfirmation = "";
+    // for (let i = 0; i < 25; i++) {
+    //   CodeForConfirmation +=
+    //     characters[Math.floor(Math.random() * characters.length)];
+    // }
+
     const userData = {
       email: email.toLowerCase(),
       firstName,
       lastName,
       password: hashedPassword,
       role: "admin",
+      confirmationCode: characters,
     };
 
     const existingEmail = await User.findOne({
@@ -144,17 +227,29 @@ app.post("/api/signup", async (req, res) => {
       const decodedToken = jwtDecode(token);
       const expiresAt = decodedToken.exp;
 
-      const { firstName, lastName, email, role } = savedUser;
+      const {
+        firstName,
+        lastName,
+        email,
+        role,
+        confirmationCode,
+        status,
+      } = savedUser;
 
       const userInfo = {
         firstName,
         lastName,
         email,
         role,
+        confirmationCode,
+        status,
       };
 
+      //Added in node Mailer
+      sendConfirmationEmail(lastName, email, confirmationCode);
+
       return res.json({
-        message: "User created!",
+        message: "User created! Check the given email to confirmed.",
         token,
         userInfo,
         expiresAt,

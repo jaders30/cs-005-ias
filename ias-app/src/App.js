@@ -1,30 +1,28 @@
-import React, { lazy, Suspense, useContext } from 'react';
+import React, { lazy, Suspense, useContext } from "react";
 import {
   BrowserRouter as Router,
   Route,
   Switch,
-  Redirect
-} from 'react-router-dom';
-import './App.css';
+  Redirect,
+} from "react-router-dom";
+import "./App.css";
 
-import {
-  AuthProvider,
-  AuthContext
-} from './context/AuthContext';
-import { FetchProvider } from './context/FetchContext';
+import { AuthProvider, AuthContext } from "./context/AuthContext";
+import { FetchProvider } from "./context/FetchContext";
 
-import AppShell from './AppShell';
+import AppShell from "./AppShell";
 
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import FourOFour from './pages/FourOFour';
-
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const Inventory = lazy(() => import('./pages/Inventory'));
-const Account = lazy(() => import('./pages/Account'));
-const Settings = lazy(() => import('./pages/Settings'));
-const Users = lazy(() => import('./pages/Users'));
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import FourOFour from "./pages/FourOFour";
+import Confirm from "./pages/Confirm";
+// const Welcome = lazy(() => import("./pages/Welcome"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Inventory = lazy(() => import("./pages/Inventory"));
+const Account = lazy(() => import("./pages/Account"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Users = lazy(() => import("./pages/Users"));
 
 const LoadingFallback = () => (
   <AppShell>
@@ -34,6 +32,7 @@ const LoadingFallback = () => (
 
 const UnauthenticatedRoutes = () => (
   <Switch>
+    <Route path="/confirm/:confirmationCode" component={Confirm}></Route>
     <Route path="/login">
       <Login />
     </Route>
