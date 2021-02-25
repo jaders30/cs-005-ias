@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 // connectSources = ["'self'", "https://cs-005-ias.herokuapp.com/"];
 app.use((req, res, next) => {
   console.log(req.session);
-  console.log(process.env);
+  // console.log(process.env);
   next();
 });
 // app.use(
