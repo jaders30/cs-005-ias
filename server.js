@@ -17,7 +17,7 @@ const app = express();
 //app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.json());
 // connectSources = ["'self'", "https://cs-005-ias.herokuapp.com/"];
 app.use((req, res, next) => {
   console.log(req.session);
