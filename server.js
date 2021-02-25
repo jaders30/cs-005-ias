@@ -24,7 +24,7 @@ app.use((req, res, next) => {
   // console.log(process.env);
   next();
 });
-app.use(express.static(path.join(__dirname, "ias-app/build")));
+
 // app.use(
 //   helmet({
 //     contentSecurityPolicy: {
@@ -44,9 +44,13 @@ app.use(express.static(path.join(__dirname, "ias-app/build")));
 //   })
 // );
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
+if (process.env.NODE_ENV == "production") {
+  app.use(express.static(path.join(__dirname, "ias-app/build")));
+
+  app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+  });
+}
 const loginRatelimiter = rateLimit({
   windowMs: 1 * 60 * 1000,
   max: 3,
@@ -172,26 +176,6 @@ const attachUser = (req, res, next) => {
 };
 
 app.use(attachUser);
-
-app.get("/dashboard", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
-
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
-
-app.get("/bio", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
-
-app.get("/settings", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
-
-app.get("/users", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
 
 const requireAuth = jwt({
   secret: process.env.JWT_SECRET,
