@@ -41,7 +41,7 @@ const AuthProvider = ({ children }) => {
     if (
       !authState.token ||
       !authState.expiresAt ||
-      authState.userInfo === "Pending"
+      authState.userInfo.status === "Pending"
     ) {
       return false;
     }
