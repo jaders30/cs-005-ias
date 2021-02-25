@@ -29,7 +29,8 @@
     "eject": "react-scripts eject",
     "build:styles": "postcss src/tailwind.css -o src/tailwind.css",
     "prebuild": "npm run build:styles",
-    "prestart": "npm run build:styles"
+    "prestart": "npm run build:styles",
+    "postinstall": "ng build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -51,5 +52,5 @@
     "postcss-cli": "^7.1.1",
     "tailwindcss": "^1.4.6"
   },
- 
+  "proxy": "http://localhost:3001"
 }
