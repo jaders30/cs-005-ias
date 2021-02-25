@@ -43,25 +43,6 @@ app.use(express.static(path.join(__dirname, "ias-app/build")));
 //     },
 //   })
 // );
-app.get("/dashboard", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
-
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
-
-app.get("/bio", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
-
-app.get("/settings", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
-
-app.get("/users", (req, res) => {
-  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
-});
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
@@ -191,6 +172,26 @@ const attachUser = (req, res, next) => {
 };
 
 app.use(attachUser);
+
+app.get("/dashboard", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
+app.get("/bio", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
+app.get("/settings", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
+
+app.get("/users", (req, res) => {
+  res.sendFile(path.join(__dirname, "ias-app/build", "index.html"));
+});
 
 const requireAuth = jwt({
   secret: process.env.JWT_SECRET,
