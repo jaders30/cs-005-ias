@@ -26,12 +26,12 @@ const {
 } = require("./util");
 
 const app = express();
-app.use(helmet());
+//app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-connectSources = ["'self'", "https://cs-005-ias.herokuapp.com/"];
+//connectSources = ["'self'", "https://cs-005-ias.herokuapp.com/"];
 
 // DEBUGGER
 app.use((req, res, next) => {
@@ -39,24 +39,24 @@ app.use((req, res, next) => {
   // console.log(process.env);
   next();
 });
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://cs-005-ias.herokuapp.com/",
-        ],
-        styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
-        imgSrc: ["'self'", "https://*.com", "data:"],
-        fontSrc: ["'self'", "https://*.com", "data:"],
-        connectSrc: connectSources,
-      },
-    },
-  })
-);
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         scriptSrc: [
+//           "'self'",
+//           "'unsafe-inline'",
+//           "https://cs-005-ias.herokuapp.com/",
+//         ],
+//         styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
+//         imgSrc: ["'self'", "https://*.com", "data:"],
+//         fontSrc: ["'self'", "https://*.com", "data:"],
+//         connectSrc: connectSources,
+//       },
+//     },
+//   })
+// );
 app.use(express.static(path.join(__dirname, "ias-app/build")));
 
 // ADDED FOR EMAIL CONFIRMATION
