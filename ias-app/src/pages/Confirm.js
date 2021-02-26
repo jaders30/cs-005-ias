@@ -1,7 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-
 import Card from "../components/common/Card";
-import Hyperlink from "../components/common/Hyperlink";
 import { FetchContext } from "../context/FetchContext";
 import GradientBar from "../components/common/GradientBar";
 import logo from "./../images/logo.png";
@@ -11,16 +9,13 @@ const Confirm = (props) => {
   const fetchContext = useContext(FetchContext);
   const [redirectOnLogin, setRedirectOnLogin] = useState(false);
   useEffect(() => {
-    //console.log(props.match.params.confirmationCode);
     const getConfimationCode = async () => {
       const theCode = props.match.params.confirmationCode;
       try {
         const { data } = await fetchContext.authAxios.get(`confirm/${theCode}`);
         const result = data.message;
-        // Check kung naverify na
-        console.log(data);
-
-        if (result === "Active") {
+        console.log(data.message);
+        if (result === true) {
           setRedirectOnLogin(true);
         }
       } catch (err) {

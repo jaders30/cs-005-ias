@@ -5,45 +5,60 @@ const nodemailer = require("nodemailer");
 const cors = require("cors");
 const jwt = require("express-jwt");
 const jwtDecode = require("jwt-decode");
+const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
+
 const path = require("path");
 const rateLimit = require("express-rate-limit");
 const dashboardData = require("./data/dashboard");
 const User = require("./data/User");
 const InventoryItem = require("./data/InventoryItem");
+const Token = require("./data/Token");
 const helmet = require("helmet");
-const { createToken, hashPassword, verifyPassword } = require("./util");
+
+const {
+  createToken,
+  hashPassword,
+  verifyPassword,
+  getRefreshToken,
+  oneWeek,
+  getDatePlusOneWeek,
+} = require("./util");
 
 const app = express();
-//app.use(helmet());
+app.use(helmet());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-// connectSources = ["'self'", "https://cs-005-ias.herokuapp.com/"];
+app.use(cookieParser());
+connectSources = ["'self'", "https://cs-005-ias.herokuapp.com/"];
+
+// DEBUGGER
 app.use((req, res, next) => {
-  console.log(req.session);
+  // console.log(req.session);
   // console.log(process.env);
   next();
 });
+
 app.use(express.static(path.join(__dirname, "ias-app/build")));
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         scriptSrc: [
-//           "'self'",
-//           "'unsafe-inline'",
-//           "https://cs-005-ias.herokuapp.com/",
-//         ],
-//         styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
-//         imgSrc: ["'self'", "https://*.com", "data:"],
-//         fontSrc: ["'self'", "https://*.com", "data:"],
-//         connectSrc: connectSources,
-//       },
-//     },
-//   })
-// );
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://cs-005-ias.herokuapp.com/",
+        ],
+        styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
+        imgSrc: ["'self'", "https://*.com", "data:"],
+        fontSrc: ["'self'", "https://*.com", "data:"],
+        connectSrc: connectSources,
+      },
+    },
+  })
+);
 
 // ADDED FOR EMAIL CONFIRMATION
 const userEmailSender = "jadewensylofariscal@gmail.com";
@@ -131,10 +146,23 @@ app.get("/api/confirm/:confirmationCode", async (req, res) => {
       message: "Confirmation is saved",
     });
   } catch (e) {
-    return res.status(400).json({ message: e });
+    return res.status(400).json({ message: "dito" });
   }
 });
 
+const saveRefreshToken = async (refreshToken, userId) => {
+  try {
+    const storedRefreshToken = new Token({
+      refreshToken,
+      user: userId,
+      expiresAt: getDatePlusOneWeek(),
+    });
+
+    return await storedRefreshToken.save();
+  } catch (err) {
+    return err;
+  }
+};
 app.post("/api/authenticate", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -163,9 +191,15 @@ app.post("/api/authenticate", async (req, res) => {
       const userInfo = Object.assign({}, { ...rest });
 
       const token = createToken(userInfo);
+      const expiresAt = getDatePlusOneWeek();
 
-      const decodedToken = jwtDecode(token);
-      const expiresAt = decodedToken.exp;
+      const refreshToken = getRefreshToken();
+      await saveRefreshToken(refreshToken, userInfo._id);
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: oneWeek,
+      });
 
       res.json({
         message: "Authentication successful!",
@@ -194,10 +228,10 @@ app.post("/api/signup", async (req, res) => {
     const characters =
       "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     let CodeForConfirmation = "";
-    // for (let i = 0; i < 25; i++) {
-    //   CodeForConfirmation +=
-    //     characters[Math.floor(Math.random() * characters.length)];
-    // }
+    for (let i = 0; i < 25; i++) {
+      CodeForConfirmation +=
+        characters[Math.floor(Math.random() * characters.length)];
+    }
 
     const userData = {
       email: email.toLowerCase(),
@@ -205,7 +239,7 @@ app.post("/api/signup", async (req, res) => {
       lastName,
       password: hashedPassword,
       role: "admin",
-      confirmationCode: characters,
+      confirmationCode: CodeForConfirmation,
     };
 
     const existingEmail = await User.findOne({
@@ -221,10 +255,11 @@ app.post("/api/signup", async (req, res) => {
 
     if (savedUser) {
       const token = createToken(savedUser);
-      const decodedToken = jwtDecode(token);
-      const expiresAt = decodedToken.exp;
+
+      const expiresAt = getDatePlusOneWeek();
 
       const {
+        _id,
         firstName,
         lastName,
         email,
@@ -234,6 +269,7 @@ app.post("/api/signup", async (req, res) => {
       } = savedUser;
 
       const userInfo = {
+        _id,
         firstName,
         lastName,
         email,
@@ -241,6 +277,15 @@ app.post("/api/signup", async (req, res) => {
         confirmationCode,
         status,
       };
+
+      const refreshToken = getRefreshToken();
+
+      await saveRefreshToken(refreshToken, userInfo._id);
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        maxAge: oneWeek,
+      });
 
       //Added in node Mailer
       sendConfirmationEmail(lastName, email, confirmationCode);
@@ -260,6 +305,59 @@ app.post("/api/signup", async (req, res) => {
     return res.status(400).json({
       message: "There was a problem creating your account",
     });
+  }
+});
+
+app.get("/api/token/refresh", async (req, res) => {
+  try {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const userFromToken = await Token.findOne({
+      refreshToken,
+      expiresAt: { $gte: new Date() },
+    }).select("user");
+
+    if (!userFromToken) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const user = await User.findOne({
+      _id: userFromToken.user,
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const token = createToken(user);
+
+    return res.json({ token });
+  } catch (err) {
+    return res.status(400).json({ message: "Something went wrong" });
+  }
+});
+
+app.delete("/api/token/invalidate", async (req, res) => {
+  try {
+    const { refreshToken } = req.cookies;
+
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Something went wrong" });
+    }
+
+    await Token.findOneAndRemove({
+      refreshToken,
+    });
+
+    res.clearCookie("refreshToken");
+
+    res.json({ message: "Token invalidated" });
+  } catch (err) {
+    return res.status(400).json({ message: "Something went wrong" });
   }
 });
 

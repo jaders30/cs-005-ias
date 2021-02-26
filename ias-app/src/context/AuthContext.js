@@ -1,6 +1,6 @@
 import React, { createContext, useState } from "react";
 import { useHistory } from "react-router-dom";
-
+import { publicFetch } from "./../util/fetch";
 const AuthContext = createContext();
 const { Provider } = AuthContext;
 
@@ -29,25 +29,61 @@ const AuthProvider = ({ children }) => {
     });
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInfo");
-    localStorage.removeItem("expiresAt");
-    setAuthState({});
-    history.push("/login");
+  const logout = async () => {
+    try {
+      await publicFetch.delete("/token/invalidate");
+      localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("expiresAt");
+      setAuthState({});
+      history.push("/login");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const isAuthenticated = () => {
     const data = JSON.parse(userInfo);
-
-    if (!authState.token || !authState.expiresAt || data.status === "Pending") {
+    if (!authState.expiresAt || data.status === "Pending") {
       return false;
     }
-    return true;
+    return new Date() < new Date(authState.expiresAt);
   };
+
+  // const isAuthenticated = () => {
+  //   if (!authState.expiresAt) {
+  //     return false;
+  //   }
+  //   return new Date() < new Date(authState.expiresAt);
+  // };
 
   const isAdmin = () => {
     return authState.userInfo.role === "admin";
+  };
+
+  const getAccessToken = () => {
+    return localStorage.getItem("token");
+  };
+
+  const getNewToken = async () => {
+    try {
+      const { data } = await publicFetch.get("/token/refresh");
+      setAuthState(Object.assign({}, authState, { token: data.token }));
+    } catch (err) {
+      return err;
+    }
+  };
+
+  const getNewTokenForRequest = async (failedRequest) => {
+    const { data } = await publicFetch.get("/token/refresh");
+
+    failedRequest.response.config.headers[
+      "Authorization"
+    ] = `Bearer ${data.token}`;
+
+    localStorage.setItem("token", data.token);
+
+    return Promise.resolve();
   };
 
   return (
@@ -58,6 +94,9 @@ const AuthProvider = ({ children }) => {
         logout,
         isAuthenticated,
         isAdmin,
+        getNewToken,
+        getAccessToken,
+        getNewTokenForRequest,
       }}
     >
       {children}

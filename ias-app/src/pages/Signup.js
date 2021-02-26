@@ -12,7 +12,6 @@ import FormError from "./../components/FormError";
 import FormSuccess from "./../components/FormSuccess";
 import { publicFetch } from "./../util/fetch";
 import logo from "./../images/logo.png";
-import { Redirect } from "react-router-dom";
 
 const SignupSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
@@ -27,20 +26,26 @@ const Signup = () => {
   const [signupError, setSignupError] = useState();
   const [loginLoading, setLoginLoading] = useState(false);
 
-  const submitCredentials = async (credentials) => {
+  const submitCredentials = async (credentials, resetForm) => {
     try {
       setLoginLoading(true);
       const { data } = await publicFetch.post(`signup`, credentials);
-
+      resetForm({});
+      setLoginLoading(false);
       authContext.setAuthState(data);
       setSignupSuccess(data.message);
       setSignupError("");
-      setLoginLoading(false);
+      setTimeout(() => {
+        setSignupSuccess("");
+      }, 3000);
     } catch (error) {
       setLoginLoading(false);
       const { data } = error.response;
       setSignupError(data.message);
       setSignupSuccess("");
+      setTimeout(() => {
+        setSignupError("");
+      }, 3000);
     }
   };
 
@@ -70,7 +75,9 @@ const Signup = () => {
                   email: "",
                   password: "",
                 }}
-                onSubmit={(values) => submitCredentials(values)}
+                onSubmit={function (values, { resetForm }) {
+                  submitCredentials(values, resetForm);
+                }}
                 validationSchema={SignupSchema}
               >
                 {() => (

@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import axios from "axios";
+import createAuthRefreshIntercetor from "axios-auth-refresh";
 import { AuthContext } from "./AuthContext";
 
 const FetchContext = createContext();
@@ -14,7 +15,7 @@ const FetchProvider = ({ children }) => {
 
   authAxios.interceptors.request.use(
     (config) => {
-      config.headers.Authorization = `Bearer ${authContext.authState.token}`;
+      config.headers.Authorization = `Bearer ${authContext.getAccessToken()}`;
       return config;
     },
     (error) => {
@@ -22,18 +23,22 @@ const FetchProvider = ({ children }) => {
     }
   );
 
-  authAxios.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (error) => {
-      const code = error && error.response ? error.response.status : 0;
-      if (code === 401 || code === 403) {
-        console.log("error code", code);
-      }
-      return Promise.reject(error);
-    }
-  );
+  createAuthRefreshIntercetor(authAxios, authContext.getNewTokenForRequest, {
+    skipWhileRefreshing: false,
+  });
+
+  // authAxios.interceptors.response.use(
+  //   (response) => {
+  //     return response;
+  //   },
+  //   (error) => {
+  //     const code = error && error.response ? error.response.status : 0;
+  //     if (code === 401 || code === 403) {
+  //       authContext.getNewToken();
+  //     }
+  //     return Promise.reject(error);
+  //   }
+  // );
 
   return (
     <Provider
