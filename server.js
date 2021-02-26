@@ -39,8 +39,6 @@ app.use((req, res, next) => {
   // console.log(process.env);
   next();
 });
-
-app.use(express.static(path.join(__dirname, "ias-app/build")));
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -59,6 +57,7 @@ app.use(
     },
   })
 );
+app.use(express.static(path.join(__dirname, "ias-app/build")));
 
 // ADDED FOR EMAIL CONFIRMATION
 const userEmailSender = "jadewensylofariscal@gmail.com";
