@@ -47,6 +47,7 @@ const AuthProvider = ({ children }) => {
     if (!authState.expiresAt || data.status === "Pending") {
       return false;
     }
+    console.log(new Date() < new Date(authState.expiresAt));
     return new Date() < new Date(authState.expiresAt);
   };
 
